@@ -1,15 +1,11 @@
 package com.affecto.jsonstat.dto;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,51 +26,52 @@ import static java.util.stream.StreamSupport.stream;
 @Data
 public class JsonStat {
 
-//    @JsonDeserialize(contentUsing = DimensionGroupBlock.Deserializer.class)
+    public static class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionGroupBlock> {
+        private static final List<String> RESERVED = ImmutableList.of("id", "size", "role");
+        @Override
+        public DimensionGroupBlock deserialize(final JsonParser p, final DeserializationContext c)
+                throws IOException, JsonProcessingException
+        {
+            final JsonNode node = p.getCodec().readTree(p);
+
+            return DimensionGroupBlock.builder()
+                    .id(stream(node.get("id").spliterator(), false)
+                            .map(JsonNode::asText)
+                            .collect(Collectors.toList()))
+                    .size(stream(node.get("size").spliterator(), false)
+                            .map(JsonNode::asInt)
+                            .collect(Collectors.toList()))
+                    .role(stream(spliteratorUnknownSize(node.get("role").fields(), Spliterator.ORDERED), false)
+                                    .collect(toMap(Map.Entry::getKey,
+                                            e -> stream(e.getValue().spliterator(), false)
+                                                    .map(JsonNode::asText)
+                                                    .collect(Collectors.toList()),
+                                            (a, b) -> a))
+                    )
+                    .dimensions(stream(spliteratorUnknownSize(node.fields(), Spliterator.ORDERED), false)
+                                    .filter(e -> !RESERVED.contains(e.getKey()))
+                                    .collect(toMap(
+                                            Map.Entry::getKey,
+                                            e -> {
+                                                try {
+                                                    final JsonParser nodeParser = e.getValue().traverse();
+                                                    nodeParser.setCodec(p.getCodec());
+                                                    return (IndividualDimensionBlock) nodeParser.readValueAs(IndividualDimensionBlock.class);
+                                                } catch (IOException ex) {
+                                                    throw new RuntimeException(ex);
+                                                }
+                                            },
+                                            (a, b) -> a))
+                    )
+                    .build();
+        }
+    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class DimensionGroupBlock {
-
-        public static class Deserializer extends JsonDeserializer<DimensionGroupBlock> {
-            private static final List<String> RESERVED = ImmutableList.of("id", "size", "role");
-            @Override
-            public DimensionGroupBlock deserialize(final JsonParser p, final DeserializationContext c)
-                    throws IOException, JsonProcessingException
-            {
-                final JsonNode node = p.getCodec().readTree(p);
-
-                return DimensionGroupBlock.builder()
-                        .id(stream(node.get("id").spliterator(), false)
-                                .map(JsonNode::asText)
-                                .collect(Collectors.toList()))
-                        .size(stream(node.get("size").spliterator(), false)
-                                .map(JsonNode::asInt)
-                                .collect(Collectors.toList()))
-                        .role(stream(spliteratorUnknownSize(node.get("role").fields(), Spliterator.ORDERED), false)
-                                        .collect(toMap(Map.Entry::getKey,
-                                                e -> stream(e.getValue().spliterator(), false)
-                                                        .map(JsonNode::asText)
-                                                        .collect(Collectors.toList()),
-                                                (a, b) -> a))
-                        )
-                        .dimensions(stream(spliteratorUnknownSize(node.fields(), Spliterator.ORDERED), false)
-                                        .filter(e -> !RESERVED.contains(e.getKey()))
-                                        .collect(toMap(
-                                                Map.Entry::getKey,
-                                                e -> {
-                                                    try {
-                                                        return (IndividualDimensionBlock) e.getValue().traverse().readValueAs(IndividualDimensionBlock.class);
-                                                    } catch (IOException ex) {
-                                                        throw new RuntimeException(ex);
-                                                    }
-                                                },
-                                                (a, b) -> a))
-                        )
-                       .build();
-            }
-        }
 
         public List<String> id;
 
@@ -84,17 +81,19 @@ public class JsonStat {
 
         public Map<String, IndividualDimensionBlock> dimensions;
 
-        @JsonAnySetter
-        public void jsonAnySetter(final String key, final Object value) {
-            System.err.println(key + " " + value);
-            if (value instanceof IndividualDimensionBlock) {
-                dimensions.put(key, (IndividualDimensionBlock) value);
-            }
-        }
+    }
+
+    @Data
+    public static class IndividualDimensionBlock {
+
+        public String label;
+
+        public DimensionCategoryBlock category;
 
     }
 
-    public static class IndividualDimensionBlock {
+    @Data
+    public static class DimensionCategoryBlock {
 
         public Map<String, Integer> index;
 
@@ -104,6 +103,7 @@ public class JsonStat {
 
     }
 
+    @Data
     public static class IndividualDimensionUnitBlock {
 
         public String type;
@@ -129,7 +129,6 @@ public class JsonStat {
 
     public List<Number> value;
 
-//    @JsonDeserialize(contentUsing = DimensionGroupBlock.Deserializer.class)
     public DimensionGroupBlock dimension;
 
 }
