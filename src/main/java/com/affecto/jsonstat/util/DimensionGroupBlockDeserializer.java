@@ -47,7 +47,8 @@ public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionG
                         .map(JsonNode::asInt)
                         .collect(Collectors.toList()))
                 .role(stream(spliteratorUnknownSize(node.get("role").fields(), Spliterator.ORDERED), false)
-                                .collect(toMap(Map.Entry::getKey,
+                                .collect(toMap(
+                                        Map.Entry::getKey,
                                         e -> stream(e.getValue().spliterator(), false)
                                                 .map(JsonNode::asText)
                                                 .collect(Collectors.toList()),
