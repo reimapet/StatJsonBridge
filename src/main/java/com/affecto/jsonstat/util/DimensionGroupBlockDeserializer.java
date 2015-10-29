@@ -3,17 +3,18 @@ package com.affecto.jsonstat.util;
 import com.affecto.jsonstat.dto.DimensionGroupBlock;
 import com.affecto.jsonstat.dto.IndividualDimensionBlock;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.toMap;
@@ -33,6 +34,10 @@ public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionG
         }
     }
 
+    private static <T> Stream<T> iteratorAsStream(final Iterator<T> iterator) {
+        return stream(spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
+    }
+
     @Override
     public DimensionGroupBlock deserialize(final JsonParser p, final DeserializationContext c) throws IOException {
         final JsonNode node = p.getCodec().readTree(p);
@@ -43,7 +48,7 @@ public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionG
                 .size(stream(node.get("size").spliterator(), false)
                         .map(JsonNode::asInt)
                         .collect(Collectors.toList()))
-                .role(stream(spliteratorUnknownSize(node.get("role").fields(), Spliterator.ORDERED), false)
+                .role(iteratorAsStream(node.get("role").fields())
                                 .collect(toMap(
                                         Map.Entry::getKey,
                                         e -> stream(e.getValue().spliterator(), false)
@@ -51,7 +56,7 @@ public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionG
                                                 .collect(Collectors.toList()),
                                         (a, b) -> a))
                 )
-                .dimensions(stream(spliteratorUnknownSize(node.fields(), Spliterator.ORDERED), false)
+                .dimensions(iteratorAsStream(node.fields())
                                 .filter(e -> !RESERVED.contains(e.getKey()))
                                 .collect(toMap(
                                         Map.Entry::getKey,
