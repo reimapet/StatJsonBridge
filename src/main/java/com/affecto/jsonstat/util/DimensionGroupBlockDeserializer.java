@@ -21,6 +21,8 @@ import static java.util.stream.StreamSupport.stream;
 
 public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionGroupBlock> {
 
+    private static final List<String> RESERVED = ImmutableList.of("id", "size", "role");
+
     private static IndividualDimensionBlock parseNodeToBlock(final JsonNode node, final JsonParser parser) {
         try {
             final JsonParser nodeParser = node.traverse();
@@ -31,14 +33,9 @@ public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionG
         }
     }
 
-
-    private static final List<String> RESERVED = ImmutableList.of("id", "size", "role");
-
     @Override
-    public DimensionGroupBlock deserialize(final JsonParser p, final DeserializationContext c)
-            throws IOException, JsonProcessingException {
+    public DimensionGroupBlock deserialize(final JsonParser p, final DeserializationContext c) throws IOException {
         final JsonNode node = p.getCodec().readTree(p);
-
         return DimensionGroupBlock.builder()
                 .id(stream(node.get("id").spliterator(), false)
                         .map(JsonNode::asText)
