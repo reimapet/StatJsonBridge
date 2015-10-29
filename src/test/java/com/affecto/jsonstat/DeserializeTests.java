@@ -3,7 +3,6 @@ package com.affecto.jsonstat;
 import com.affecto.jsonstat.dto.DimensionGroupBlock;
 import com.affecto.jsonstat.dto.JsonStat;
 import com.affecto.jsonstat.util.DimensionGroupBlockDeserializer;
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -14,16 +13,16 @@ import java.io.InputStream;
 public class DeserializeTests {
 
     private static ObjectMapper objectMapper() {
-        final ObjectMapper om = new ObjectMapper();
-        om.registerModule(new JavaTimeModule());
-        SimpleModule testModule = new SimpleModule("MyModule", new Version(1, 0, 0, null))
+        final ObjectMapper ret = new ObjectMapper();
+        ret.registerModule(new JavaTimeModule());
+        final SimpleModule testModule = new SimpleModule("CustomDeserializerModule")
                 .addDeserializer(DimensionGroupBlock.class, new DimensionGroupBlockDeserializer());
-        om.registerModule(testModule);
-        return om;
+        ret.registerModule(testModule);
+        return ret;
     }
 
     private static InputStream fromTestClassPath(final String path) {
-        return DeserializeTests.class.getClassLoader().getResourceAsStream("us-labor-ds.json");
+        return DeserializeTests.class.getClassLoader().getResourceAsStream(path);
     }
 
     @Test
