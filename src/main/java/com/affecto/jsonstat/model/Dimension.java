@@ -5,7 +5,7 @@ public interface Dimension {
 	/**
 	 * Get unique identifier for the dimension
 	 */
-	String getID();
+	String getId();
 	
 	String getLabel();
 	

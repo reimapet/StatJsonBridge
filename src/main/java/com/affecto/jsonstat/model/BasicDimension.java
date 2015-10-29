@@ -2,6 +2,7 @@ package com.affecto.jsonstat.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -21,11 +22,6 @@ public class BasicDimension implements Dimension {
     public String label;
 
     public List<String> values;
-
-    @Override
-    public String getID() {
-        return id;
-    }
 
     @Override
     public int getSize() {

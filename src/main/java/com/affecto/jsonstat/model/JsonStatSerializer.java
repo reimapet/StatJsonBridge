@@ -23,7 +23,7 @@ public class JsonStatSerializer {
         sb.append("id : [");
         while (it.hasNext()) {
             final Dimension d = it.next();
-            sb.append('"').append(d.getID()).append('"');
+            sb.append('"').append(d.getId()).append('"');
             if (it.hasNext())
                 sb.append(",");
 
@@ -44,7 +44,7 @@ public class JsonStatSerializer {
         it = dataset.getDimensions().iterator();
         while (it.hasNext()) {
             final Dimension d = it.next();
-            sb.append(d.getID()).append(": {");
+            sb.append(d.getId()).append(": {");
             sb.append("label: \"").append(d.getLabel()).append("\", ");
 
             sb.append("category : {");

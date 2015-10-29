@@ -1,5 +1,6 @@
 package com.affecto.jsonstat.model;
 
+import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 
 import java.io.FileReader;
@@ -12,11 +13,9 @@ import java.util.stream.StreamSupport;
 
 public class CsvFileValues implements Values {
 
+    @Getter
     private List<String> values;
 
-    /**
-     * @param fileName file containing CSV data
-     */
     public CsvFileValues(final String fileName) throws IOException {
         try (final Reader r = new FileReader(fileName)) {
             values = CSVFormat.DEFAULT.parse(r).getRecords().stream()
