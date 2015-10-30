@@ -1,8 +1,10 @@
 package com.affecto.jsonstat.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @Data
 public class IndividualDimensionUnitBlock {
@@ -11,13 +13,16 @@ public class IndividualDimensionUnitBlock {
 
     public String base;
 
+    @JsonInclude(NON_NULL)
     public String symbol;
 
     public Integer multiplier;
 
+    @JsonInclude(NON_NULL)
     @JsonProperty(required = false)
     public String label;
 
+    @JsonInclude(NON_NULL)
     @JsonProperty(required = false)
     public Integer decimals;
 
