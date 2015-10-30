@@ -4,29 +4,19 @@ public interface Dimension {
 
 	/**
 	 * Get unique identifier for the dimension
-	 * @return
 	 */
-	public String getID();
+	String getId();
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public String getLabel();
+	String getLabel();
 	
 	/**
 	 * Get the number of items in the dimension
-	 * @return
 	 */
-	public int getSize();
+	int getSize();
 	
 	/**
 	 * Get the value for the ith index
-	 * @param index
-	 * @return
 	 */
-	public String getIndexValue( int index );
-	
-	
-	
+	String getIndexValue(int index);
+
 }
