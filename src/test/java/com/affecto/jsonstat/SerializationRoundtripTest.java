@@ -59,7 +59,7 @@ public class SerializationRoundtripTest {
         return SerializationRoundtripTest.class.getClassLoader().getResourceAsStream(path);
     }
 
-    @Parameterized.Parameters(name = "testRoundtrip(\"{0}\")")
+    @Parameterized.Parameters(name = "{0}")
     public static Collection<String> generateData() {
         return ImmutableList.of(
                 "us-labor-ds.json",

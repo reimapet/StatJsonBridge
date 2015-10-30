@@ -9,6 +9,7 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @Data
@@ -23,7 +24,7 @@ public class JsonStat {
 
     public String source;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd")
     public LocalDate updated;
 
     public List<Number> value;

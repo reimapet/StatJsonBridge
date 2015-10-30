@@ -3,7 +3,6 @@ package com.affecto.jsonstat.util;
 import com.affecto.jsonstat.dto.DimensionGroupBlock;
 import com.affecto.jsonstat.dto.IndividualDimensionBlock;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
@@ -12,8 +11,8 @@ import java.util.Map;
 
 public class DimensionGroupBlockSerializer extends JsonSerializer<DimensionGroupBlock> {
     @Override
-    public void serialize(final DimensionGroupBlock value, final JsonGenerator gen, final SerializerProvider serializers)
-            throws IOException, JsonProcessingException
+    public void serialize(final DimensionGroupBlock value, final JsonGenerator gen, final SerializerProvider sp)
+            throws IOException
     {
         gen.writeStartObject();
         gen.writeObjectField("id", value.id);

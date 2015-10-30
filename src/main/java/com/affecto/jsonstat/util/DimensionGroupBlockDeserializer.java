@@ -39,8 +39,10 @@ public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionG
     }
 
     @Override
-    public DimensionGroupBlock deserialize(final JsonParser p, final DeserializationContext c) throws IOException {
-        final JsonNode node = p.getCodec().readTree(p);
+    public DimensionGroupBlock deserialize(final JsonParser parser, final DeserializationContext c)
+            throws IOException
+    {
+        final JsonNode node = parser.getCodec().readTree(parser);
         return DimensionGroupBlock.builder()
                 .id(stream(node.get("id").spliterator(), false)
                         .map(JsonNode::asText)
@@ -60,7 +62,7 @@ public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionG
                                 .filter(e -> !RESERVED.contains(e.getKey()))
                                 .collect(toMap(
                                         Map.Entry::getKey,
-                                        e -> parseNodeToBlock(e.getValue(), p),
+                                        e -> parseNodeToBlock(e.getValue(), parser),
                                         (a, b) -> a))
                 )
                 .build();
