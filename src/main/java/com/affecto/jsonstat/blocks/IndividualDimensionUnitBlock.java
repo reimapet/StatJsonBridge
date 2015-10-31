@@ -1,4 +1,4 @@
-package com.affecto.jsonstat.dto;
+package com.affecto.jsonstat.blocks;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

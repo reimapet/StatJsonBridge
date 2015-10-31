@@ -1,15 +1,17 @@
-package com.affecto.jsonstat.dto;
+package com.affecto.jsonstat.blocks;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.affecto.jsonstat.elements.UpdatedElement;
+import com.affecto.jsonstat.serializers.UpdatedElementDeserializer;
+import com.affecto.jsonstat.serializers.UpdatedElementSerializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @Data
@@ -24,8 +26,9 @@ public class JsonStat {
 
     public String source;
 
-    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd")
-    public LocalDate updated;
+    @JsonDeserialize(using = UpdatedElementDeserializer.class)
+    @JsonSerialize(using = UpdatedElementSerializer.class)
+    public UpdatedElement updated;
 
     public List<Number> value;
 

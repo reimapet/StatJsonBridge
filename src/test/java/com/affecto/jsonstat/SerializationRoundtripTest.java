@@ -1,9 +1,9 @@
 package com.affecto.jsonstat;
 
-import com.affecto.jsonstat.dto.DimensionGroupBlock;
-import com.affecto.jsonstat.dto.JsonStat;
-import com.affecto.jsonstat.util.DimensionGroupBlockDeserializer;
-import com.affecto.jsonstat.util.DimensionGroupBlockSerializer;
+import com.affecto.jsonstat.blocks.DimensionGroupBlock;
+import com.affecto.jsonstat.blocks.JsonStat;
+import com.affecto.jsonstat.serializers.DimensionGroupBlockDeserializer;
+import com.affecto.jsonstat.serializers.DimensionGroupBlockSerializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -63,7 +63,8 @@ public class SerializationRoundtripTest {
     public static Collection<String> generateData() {
         return ImmutableList.of(
                 "us-labor-ds.json",
-                "oecd-ds.json"
+                "oecd-ds.json",
+                "galicia-ds.json"
         );
     }
 

@@ -1,7 +1,7 @@
-package com.affecto.jsonstat.util;
+package com.affecto.jsonstat.serializers;
 
-import com.affecto.jsonstat.dto.DimensionGroupBlock;
-import com.affecto.jsonstat.dto.IndividualDimensionBlock;
+import com.affecto.jsonstat.blocks.DimensionGroupBlock;
+import com.affecto.jsonstat.blocks.IndividualDimensionBlock;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;

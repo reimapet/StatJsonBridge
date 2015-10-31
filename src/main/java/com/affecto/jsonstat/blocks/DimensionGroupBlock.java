@@ -1,4 +1,4 @@
-package com.affecto.jsonstat.dto;
+package com.affecto.jsonstat.blocks;
 
 import lombok.Builder;
 import lombok.Data;
