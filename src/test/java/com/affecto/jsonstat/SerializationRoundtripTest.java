@@ -1,12 +1,8 @@
 package com.affecto.jsonstat;
 
-import com.affecto.jsonstat.blocks.DimensionGroupBlock;
 import com.affecto.jsonstat.blocks.JsonStat;
-import com.affecto.jsonstat.serializers.DimensionGroupBlockDeserializer;
-import com.affecto.jsonstat.serializers.DimensionGroupBlockSerializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.diff.JsonDiff;
@@ -29,17 +25,12 @@ public class SerializationRoundtripTest {
     private static ObjectMapper objectMapper() {
         final ObjectMapper ret = new ObjectMapper();
         ret.registerModule(new JavaTimeModule());
-        final SimpleModule testModule = new SimpleModule("CustomDeserializerModule")
-                .addDeserializer(DimensionGroupBlock.class, new DimensionGroupBlockDeserializer())
-                .addSerializer(DimensionGroupBlock.class, new DimensionGroupBlockSerializer());
-        ret.registerModule(testModule);
         return ret;
     }
 
     private static JsonNode readFromClassPath(final String path) {
         final ObjectMapper om = objectMapper();
-        try (final InputStream is = fromTestClassPath(path))
-        {
+        try (final InputStream is = fromTestClassPath(path)) {
             return om.readValue(is, JsonNode.class);
         } catch (IOException e) {
             throw new RuntimeException(e);

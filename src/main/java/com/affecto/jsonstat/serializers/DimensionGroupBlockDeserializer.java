@@ -2,6 +2,7 @@ package com.affecto.jsonstat.serializers;
 
 import com.affecto.jsonstat.blocks.DimensionGroupBlock;
 import com.affecto.jsonstat.blocks.IndividualDimensionBlock;
+import com.affecto.jsonstat.util.StreamingJsonDeserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -20,23 +21,9 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.StreamSupport.stream;
 
-public class DimensionGroupBlockDeserializer extends JsonDeserializer<DimensionGroupBlock> {
+public class DimensionGroupBlockDeserializer extends StreamingJsonDeserializer<DimensionGroupBlock> {
 
     private static final List<String> RESERVED = ImmutableList.of("id", "size", "role");
-
-    private static IndividualDimensionBlock parseNodeToBlock(final JsonNode node, final JsonParser parser) {
-        try {
-            final JsonParser nodeParser = node.traverse();
-            nodeParser.setCodec(parser.getCodec());
-            return nodeParser.readValueAs(IndividualDimensionBlock.class);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private static <T> Stream<T> iteratorAsStream(final Iterator<T> iterator) {
-        return stream(spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
-    }
 
     @Override
     public DimensionGroupBlock deserialize(final JsonParser parser, final DeserializationContext c)

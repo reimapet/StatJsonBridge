@@ -1,8 +1,13 @@
 package com.affecto.jsonstat.blocks;
 
+import com.affecto.jsonstat.elements.IndexElement;
+import com.affecto.jsonstat.serializers.IndexElementDeserializer;
+import com.affecto.jsonstat.serializers.IndexElementSerializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 import java.util.List;
@@ -14,7 +19,9 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 public class DimensionCategoryBlock {
 
     @JsonInclude(NON_NULL)
-    public Map<String, Integer> index;
+    @JsonDeserialize(using = IndexElementDeserializer.class)
+    @JsonSerialize(using = IndexElementSerializer.class)
+    public IndexElement index;
 
     @JsonInclude(NON_NULL)
     public Map<String, String> label;

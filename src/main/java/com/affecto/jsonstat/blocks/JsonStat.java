@@ -1,6 +1,8 @@
 package com.affecto.jsonstat.blocks;
 
 import com.affecto.jsonstat.elements.UpdatedElement;
+import com.affecto.jsonstat.serializers.DimensionGroupBlockDeserializer;
+import com.affecto.jsonstat.serializers.DimensionGroupBlockSerializer;
 import com.affecto.jsonstat.serializers.UpdatedElementDeserializer;
 import com.affecto.jsonstat.serializers.UpdatedElementSerializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -32,6 +34,8 @@ public class JsonStat {
 
     public List<Number> value;
 
+    @JsonDeserialize(using = DimensionGroupBlockDeserializer.class)
+    @JsonSerialize(using = DimensionGroupBlockSerializer.class)
     public DimensionGroupBlock dimension;
 
     @JsonInclude(NON_NULL)

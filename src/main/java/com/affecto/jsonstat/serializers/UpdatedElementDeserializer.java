@@ -14,13 +14,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class UpdatedElementDeserializer extends JsonDeserializer<UpdatedElement> {
-
-    final DateTimeFormatter localDateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-
-
     @Override
     public UpdatedElement deserialize(final JsonParser p, final DeserializationContext ctxt)
-            throws IOException, JsonProcessingException
+            throws IOException
     {
         final String value = p.getValueAsString();
         try {
