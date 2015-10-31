@@ -27,6 +27,10 @@ public class IndividualDimensionUnitBlock {
 
     @JsonInclude(NON_NULL)
     @JsonProperty(required = false)
+    public String position;
+
+    @JsonInclude(NON_NULL)
+    @JsonProperty(required = false)
     public Integer decimals;
 
 }

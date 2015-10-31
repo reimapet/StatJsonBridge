@@ -56,7 +56,9 @@ public class SerializationRoundtripTest {
                 "us-labor-ds.json",
                 "oecd-ds.json",
                 "galicia-ds.json",
-                "canada-ds.json"
+                "canada-ds.json",
+                "us-gsp-ds.json",
+                "us-unr-ds.json"
         );
     }
 
