@@ -13,9 +13,9 @@ public class IndexElementSerializer extends JsonSerializer<IndexElement> {
             throws IOException
     {
         if (value.isList()) {
-            gen.writeObject(value.listIndex);
+            gen.writeObject(value.list);
         } else if (value.isMap()) {
-            gen.writeObject(value.mapIndex);
+            gen.writeObject(value.map);
         } else {
             gen.writeNull();
         }

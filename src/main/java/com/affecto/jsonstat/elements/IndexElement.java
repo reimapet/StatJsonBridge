@@ -12,28 +12,28 @@ import java.util.Map;
 public class IndexElement {
 
     @Getter
-    public Map<String, Integer> mapIndex;
+    public Map<String, Integer> map;
 
     @Getter
-    public List<String> listIndex;
+    public List<String> list;
 
     public boolean isMap() {
-        return mapIndex != null;
+        return map != null;
     }
 
     public boolean isList() {
-        return listIndex != null;
+        return list != null;
     }
 
-    public IndexElement setMap(final Map<String, Integer> mapIndex) {
-        this.mapIndex = mapIndex;
-        this.listIndex = null;
+    public IndexElement setMap(final Map<String, Integer> map) {
+        this.map = map;
+        this.list = null;
         return this;
     }
 
-    public IndexElement setList(final List<String> listIndex) {
-        this.mapIndex = null;
-        this.listIndex = listIndex;
+    public IndexElement setList(final List<String> list) {
+        this.map = null;
+        this.list = list;
         return this;
     }
 

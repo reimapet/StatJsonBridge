@@ -23,4 +23,8 @@ public class IndividualDimensionBlock {
     @JsonProperty(required = false)
     public JsonNode note;
 
+    @JsonInclude(NON_NULL)
+    @JsonProperty(required = false)
+    public JsonNode link;
+
 }

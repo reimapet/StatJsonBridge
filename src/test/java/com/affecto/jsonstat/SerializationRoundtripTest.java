@@ -55,7 +55,8 @@ public class SerializationRoundtripTest {
         return ImmutableList.of(
                 "us-labor-ds.json",
                 "oecd-ds.json",
-                "galicia-ds.json"
+                "galicia-ds.json",
+                "canada-ds.json"
         );
     }
 
