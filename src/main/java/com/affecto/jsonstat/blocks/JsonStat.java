@@ -1,18 +1,14 @@
 package com.affecto.jsonstat.blocks;
 
 import com.affecto.jsonstat.elements.UpdatedElement;
-import com.affecto.jsonstat.serializers.DimensionGroupBlockDeserializer;
-import com.affecto.jsonstat.serializers.DimensionGroupBlockSerializer;
-import com.affecto.jsonstat.serializers.UpdatedElementDeserializer;
-import com.affecto.jsonstat.serializers.UpdatedElementSerializer;
+import com.affecto.jsonstat.elements.ValueElement;
+import com.affecto.jsonstat.serializers.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
-
-import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -32,7 +28,9 @@ public class JsonStat {
     @JsonSerialize(using = UpdatedElementSerializer.class)
     public UpdatedElement updated;
 
-    public List<Number> value;
+    @JsonDeserialize(using = ValueElementDeserializer.class)
+    @JsonSerialize(using = ValueElementSerializer.class)
+    public ValueElement value;
 
     @JsonDeserialize(using = DimensionGroupBlockDeserializer.class)
     @JsonSerialize(using = DimensionGroupBlockSerializer.class)
