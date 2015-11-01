@@ -58,7 +58,8 @@ public class SerializationRoundtripTest {
                 "galicia-ds.json",
                 "canada-ds.json",
                 "us-gsp-ds.json",
-                "us-unr-ds.json"
+                "us-unr-ds.json",
+                "hierarchy-ds.json"
         );
     }
 

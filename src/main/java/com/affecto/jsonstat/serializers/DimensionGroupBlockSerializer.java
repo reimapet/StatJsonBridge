@@ -17,7 +17,9 @@ public class DimensionGroupBlockSerializer extends JsonSerializer<DimensionGroup
         gen.writeStartObject();
         gen.writeObjectField("id", value.id);
         gen.writeObjectField("size", value.size);
-        gen.writeObjectField("role", value.role);
+        if (null != value.role) {
+            gen.writeObjectField("role", value.role);
+        }
         for (final Map.Entry<String, IndividualDimensionBlock> e : value.dimensions.entrySet()) {
             gen.writeObjectField(e.getKey(), e.getValue());
         }

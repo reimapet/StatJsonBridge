@@ -7,12 +7,20 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toMap;
+import java.util.stream.Stream;
 
 public class ValueElementDeserializer extends StreamingJsonDeserializer<ValueElement> {
+
+    /* Because Collectors.toMap doesn't support null map values. */
+    private static Map<String, Number> asNullableValueMap(final Stream<Map.Entry<String, JsonNode>> stream) {
+        final Map<String, Number> ret = new HashMap<>();
+        stream.forEach(e -> ret.put(e.getKey(), e.getValue().numberValue()));
+        return ret;
+    }
+
     @Override
     public ValueElement deserialize(final JsonParser parser, final DeserializationContext ctxt)
             throws IOException
@@ -23,10 +31,8 @@ public class ValueElementDeserializer extends StreamingJsonDeserializer<ValueEle
                     .map(JsonNode::numberValue)
                     .collect(Collectors.toList()));
         } else if (node.isObject()) {
-            return new ValueElement().setMap(iteratorAsStream(node.fields()).collect(toMap(
-                    Map.Entry::getKey,
-                    e -> e.getValue().numberValue(),
-                    (a, b) -> a)));
+            return new ValueElement().setMap(
+                    asNullableValueMap(iteratorAsStream(node.fields())));
         } else {
             return null;
         }

@@ -30,28 +30,35 @@ public class DimensionGroupBlockDeserializer extends StreamingJsonDeserializer<D
             throws IOException
     {
         final JsonNode node = parser.getCodec().readTree(parser);
-        return DimensionGroupBlock.builder()
-                .id(stream(node.get("id").spliterator(), false)
-                        .map(JsonNode::asText)
-                        .collect(Collectors.toList()))
-                .size(stream(node.get("size").spliterator(), false)
-                        .map(JsonNode::asInt)
-                        .collect(Collectors.toList()))
-                .role(iteratorAsStream(node.get("role").fields())
-                                .collect(toMap(
-                                        Map.Entry::getKey,
-                                        e -> stream(e.getValue().spliterator(), false)
-                                                .map(JsonNode::asText)
-                                                .collect(Collectors.toList()),
-                                        (a, b) -> a))
-                )
-                .dimensions(iteratorAsStream(node.fields())
-                                .filter(e -> !RESERVED.contains(e.getKey()))
-                                .collect(toMap(
-                                        Map.Entry::getKey,
-                                        e -> parseNodeToBlock(e.getValue(), parser),
-                                        (a, b) -> a))
-                )
-                .build();
+        final DimensionGroupBlock.DimensionGroupBlockBuilder builder = DimensionGroupBlock.builder();
+
+        builder.id(stream(node.get("id").spliterator(), false)
+                .map(JsonNode::asText)
+                .collect(Collectors.toList()));
+
+        builder.size(stream(node.get("size").spliterator(), false)
+                .map(JsonNode::asInt)
+                .collect(Collectors.toList()));
+
+        if (node.has("role")) {
+            builder.role(iteratorAsStream(node.get("role").fields())
+                            .collect(toMap(
+                                    Map.Entry::getKey,
+                                    e -> stream(e.getValue().spliterator(), false)
+                                            .map(JsonNode::asText)
+                                            .collect(Collectors.toList()),
+                                    (a, b) -> a))
+            );
+        }
+
+        builder.dimensions(iteratorAsStream(node.fields())
+                        .filter(e -> !RESERVED.contains(e.getKey()))
+                        .collect(toMap(
+                                Map.Entry::getKey,
+                                e -> parseNodeToBlock(e.getValue(), parser),
+                                (a, b) -> a))
+        );
+
+        return builder.build();
     }
 }
