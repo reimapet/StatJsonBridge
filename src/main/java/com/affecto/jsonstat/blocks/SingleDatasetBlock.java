@@ -13,7 +13,7 @@ import lombok.Data;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @Data
-public class JsonStat {
+public class SingleDatasetBlock {
 
     @JsonProperty("class")
     public String jsonStatClass;

@@ -1,6 +1,6 @@
 package com.affecto.jsonstat;
 
-import com.affecto.jsonstat.blocks.JsonStat;
+import com.affecto.jsonstat.blocks.SingleDatasetBlock;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -37,10 +37,10 @@ public class SerializationRoundtripTest {
         }
     }
 
-    private static JsonNode backAndForth(final JsonStat jsonStat) {
+    private static JsonNode backAndForth(final SingleDatasetBlock singleDatasetBlock) {
         final ObjectMapper om = objectMapper();
         try {
-            return om.readValue(om.writeValueAsString(jsonStat), JsonNode.class);
+            return om.readValue(om.writeValueAsString(singleDatasetBlock), JsonNode.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +69,7 @@ public class SerializationRoundtripTest {
     public void testRoundtrip() throws Exception {
         final ObjectMapper om = objectMapper();
         try (final InputStream is = fromTestClassPath(path)) {
-            final JsonStat stat = om.readValue(is, JsonStat.class);
+            final SingleDatasetBlock stat = om.readValue(is, SingleDatasetBlock.class);
 
             final JsonNode b = backAndForth(stat);
             final JsonNode a = readFromClassPath(path);
