@@ -3,6 +3,7 @@ package com.affecto.jsonstat;
 import com.affecto.jsonstat.blocks.SingleDatasetBlock;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.diff.JsonDiff;
@@ -25,6 +26,7 @@ public class SerializationRoundtripTest {
     private static ObjectMapper objectMapper() {
         final ObjectMapper ret = new ObjectMapper();
         ret.registerModule(new JavaTimeModule());
+        ret.registerModule(new Jdk8Module());
         return ret;
     }
 

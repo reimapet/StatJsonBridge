@@ -1,6 +1,9 @@
 package com.affecto.jsonstat.elements;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
@@ -9,12 +12,14 @@ import java.util.Map;
  * Contains an index, either a Map<String, Integer>(element, index)
  * or List<String> with the list position as the index.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(builderClassName = "Builder")
 public class IndexElement {
 
-    @Getter
     public Map<String, Integer> map;
 
-    @Getter
     public List<String> list;
 
     public boolean isMap() {

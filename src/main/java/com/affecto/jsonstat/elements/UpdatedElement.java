@@ -1,6 +1,9 @@
 package com.affecto.jsonstat.elements;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,15 +12,16 @@ import java.time.ZonedDateTime;
 /**
  * Represents an JSON-Stat "updated" element, which can be either a LocalDate, LocalDateTime, or ZonedDateTime.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(builderClassName = "Builder")
 public class UpdatedElement {
 
-    @Getter
     public LocalDate localDate;
 
-    @Getter
     public LocalDateTime localDateTime;
 
-    @Getter
     public ZonedDateTime zonedDateTime;
 
     public boolean isLocalDate() {

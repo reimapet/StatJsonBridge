@@ -1,7 +1,7 @@
 package com.affecto.jsonstat.blocks;
 
-import java.util.Map;
+import java.util.HashMap;
 
-abstract public class MultipleDatasetBlock implements Map<String, SingleDatasetBlock> {
+public class MultipleDatasetBlock extends HashMap<String, SingleDatasetBlock> {
 
 }

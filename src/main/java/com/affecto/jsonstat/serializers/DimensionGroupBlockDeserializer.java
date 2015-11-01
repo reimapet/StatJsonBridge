@@ -30,7 +30,7 @@ public class DimensionGroupBlockDeserializer extends StreamingJsonDeserializer<D
             throws IOException
     {
         final JsonNode node = parser.getCodec().readTree(parser);
-        final DimensionGroupBlock.DimensionGroupBlockBuilder builder = DimensionGroupBlock.builder();
+        final DimensionGroupBlock.Builder builder = DimensionGroupBlock.builder();
 
         builder.id(stream(node.get("id").spliterator(), false)
                 .map(JsonNode::asText)

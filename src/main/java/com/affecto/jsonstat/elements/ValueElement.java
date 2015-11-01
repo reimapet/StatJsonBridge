@@ -1,10 +1,14 @@
 package com.affecto.jsonstat.elements;
 
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Map;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(builderClassName = "Builder")
 public class ValueElement {
 
     @Getter
