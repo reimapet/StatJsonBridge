@@ -17,9 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 public class Application extends SpringBootServletInitializer {
 
     @RequestMapping("/")
-    @ResponseBody
     public String index(final Model model, final HttpServletRequest req) {
-        return "Main Page";
+        return "index";
     }
 
     @RequestMapping("/{user:[a-z0-9]+}")

@@ -25,3 +25,5 @@ spring:
 spring.jpa.hibernate.ddl-auto: create-drop
 
 spring.data.rest.base-path: /_/rest/
+
+spring.mustache.suffix: .mustache
