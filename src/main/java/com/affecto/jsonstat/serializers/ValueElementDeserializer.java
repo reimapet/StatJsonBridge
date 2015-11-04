@@ -31,8 +31,7 @@ public class ValueElementDeserializer extends StreamingJsonDeserializer<ValueEle
                     .map(JsonNode::numberValue)
                     .collect(Collectors.toList()));
         } else if (node.isObject()) {
-            return new ValueElement().setMap(
-                    asNullableValueMap(iteratorAsStream(node.fields())));
+            return new ValueElement().setMap(asNullableValueMap(iteratorAsStream(node.fields())));
         } else {
             return null;
         }

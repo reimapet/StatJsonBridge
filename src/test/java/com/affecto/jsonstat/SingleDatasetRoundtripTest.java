@@ -21,7 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(Parameterized.class)
-public class SerializationRoundtripTest {
+public class SingleDatasetRoundtripTest {
 
     private static ObjectMapper objectMapper() {
         final ObjectMapper ret = new ObjectMapper();
@@ -49,7 +49,7 @@ public class SerializationRoundtripTest {
     }
 
     private static InputStream fromTestClassPath(final String path) {
-        return SerializationRoundtripTest.class.getClassLoader().getResourceAsStream(path);
+        return SingleDatasetRoundtripTest.class.getClassLoader().getResourceAsStream(path);
     }
 
     @Parameterized.Parameters(name = "{0}")
