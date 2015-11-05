@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * An user of the application.
@@ -22,6 +20,12 @@ public class User {
     @Id
     @GeneratedValue
     private Long id;
+
+    @OneToMany(mappedBy = "user")
+    private List<InputDataSource> dataSources;
+
+    @OneToMany(mappedBy = "user")
+    private List<InputQuery> queries;
 
     private String username;
 
