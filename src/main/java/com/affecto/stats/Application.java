@@ -24,25 +24,28 @@ public class Application extends SpringBootServletInitializer {
         return "index";
     }
 
-    @RequestMapping("/{user:[a-z0-9]+}")
-    public String user(final Model model, @PathVariable("user") final String user) {
+    @RequestMapping("/{username:[a-z0-9]+}")
+    public String user(final Model model, @PathVariable("username") final String username) {
+        model.addAllAttributes(adminService.entitiesForView(username));
         return "user";
     }
 
-    @RequestMapping("/{user:[a-z0-9]+}/{dataSource:[a-z0-9]+}")
+    @RequestMapping("/{username:[a-z0-9]+}/{dataSourceName:[a-z0-9]+}")
     public String dataSource(final Model model,
-                             @PathVariable("user") final String user,
-                             @PathVariable("dataSource") final String dataSource)
+                             @PathVariable("username") final String username,
+                             @PathVariable("dataSourceName") final String dataSourceName)
     {
+        model.addAllAttributes(adminService.entitiesForView(username, dataSourceName));
         return "datasource";
     }
 
-    @RequestMapping("/{user:[a-z0-9]+}/{dataSource:[a-z0-9]+}/{query:[a-z0-9]+}")
+    @RequestMapping("/{username:[a-z0-9]+}/{dataSourceName:[a-z0-9]+}/{queryName:[a-z0-9]+}")
     public String query(final Model model,
-                        @PathVariable("user") final String user,
-                        @PathVariable("dataSource") final String dataSource,
-                        @PathVariable("query") final String query)
+                        @PathVariable("username") final String username,
+                        @PathVariable("dataSourceName") final String dataSourceName,
+                        @PathVariable("queryName") final String queryName)
     {
+        model.addAllAttributes(adminService.entitiesForView(username, dataSourceName, queryName));
         return "query";
     }
 
