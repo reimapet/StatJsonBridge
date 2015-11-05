@@ -20,10 +20,11 @@ spring:
     show-banner: false
   datasource:
     platform: h2
-    url: "jdbc:h2:mem:"
+    url: "jdbc:h2:mem:dev;DB_CLOSE_ON_EXIT=FALSE"
+  mustache:
+    cache: false
+    suffix: .mustache
 
 spring.jpa.hibernate.ddl-auto: create-drop
 
 spring.data.rest.base-path: /_/rest/
-
-spring.mustache.suffix: .mustache

@@ -21,14 +21,22 @@ public class AdminService {
     @Autowired
     private InputDataSourceRepository dataSourceRepository;
 
+    public Map<String, ?> entitiesForView() {
+        return ImmutableMap.of(
+                "isIndexPage", "true"
+        );
+    }
+
     public Map<String, ?> entitiesForView(final String username) {
         return ImmutableMap.of(
+                "isUserPage", "true",
                 "user", userRepository.findByUsername(username)
         );
     }
 
     public Map<String, ?> entitiesForView(final String username, final String dataSourceName) {
         return ImmutableMap.of(
+                "isDataSourcePage", "true",
                 "user", userRepository.findByUsername(username),
                 "dataSource", dataSourceRepository.findByName(dataSourceName)
         );
@@ -36,10 +44,10 @@ public class AdminService {
 
     public Map<String, ?> entitiesForView(final String username, final String dataSourceName, final String queryName) {
         return ImmutableMap.of(
+                "isQueryPage", "true",
                 "user", userRepository.findByUsername(username),
                 "dataSource", dataSourceRepository.findByName(dataSourceName),
                 "query", queryRepository.findByName(queryName)
         );
     }
-
 }

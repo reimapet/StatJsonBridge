@@ -20,7 +20,7 @@ public class Application extends SpringBootServletInitializer {
 
     @RequestMapping("/")
     public String index(final Model model) {
-        model.addAttribute("");
+        model.addAllAttributes(adminService.entitiesForView());
         return "index";
     }
 
