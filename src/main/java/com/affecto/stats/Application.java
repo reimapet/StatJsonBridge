@@ -1,6 +1,7 @@
 package com.affecto.stats;
 
 import com.affecto.stats.services.AdminService;
+import com.affecto.stats.services.RenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @SpringBootApplication
 @Controller
@@ -17,6 +19,9 @@ public class Application extends SpringBootServletInitializer {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private RenderService renderService;
 
     @RequestMapping("/")
     public String index(final Model model) {
@@ -47,6 +52,16 @@ public class Application extends SpringBootServletInitializer {
     {
         model.addAllAttributes(adminService.entitiesForView(username, dataSourceName, queryName));
         return "query";
+    }
+
+    @RequestMapping("/_/api/{username:[a-z0-9]+}/{dataSourceName:[a-z0-9]+}/{queryName:[a-z0-9]+}")
+    @ResponseBody
+    public String apiRenderQuery(final Model model,
+                        @PathVariable("username") final String username,
+                        @PathVariable("dataSourceName") final String dataSourceName,
+                        @PathVariable("queryName") final String queryName)
+    {
+        return renderService.renderQuery(username, dataSourceName, queryName);
     }
 
     @Override

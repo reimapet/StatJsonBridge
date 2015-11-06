@@ -29,6 +29,13 @@ public class InputDataSource {
 
     private String title;
 
+    @Column(name = "jdbc_url")
     private String jdbcUrl;
+
+    @Column(name = "jdbc_username")
+    private String jdbcUsername;
+
+    @Column(name = "jdbc_password")
+    private String jdbcPassword;
 
 }

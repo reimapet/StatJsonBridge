@@ -1,16 +1,15 @@
 spring.jackson.serialization.INDENT_OUTPUT: true
 
 logging.level:
-  "org.springframework": ERROR
-  "org.elasticsearch": ERROR
-  "org.hibernate": ERROR
+  "org.springframework": WARN
+  "org.elasticsearch": WARN
+  "org.hibernate": WARN
   "io.undertow": ERROR
-  "org.xnio": ERROR
-  "org.apache": ERROR
+  "org.xnio": WARN
+  "org.apache": WARN
 
 server:
   port: 8080
-  address: 127.0.0.1
   sessionTimeout: 0
 
 management.port: -1
