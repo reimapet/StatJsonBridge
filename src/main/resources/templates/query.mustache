@@ -16,14 +16,161 @@
         </section>
 
         <section class="content">
-            <div class="row"></div>
+            <div class="row"><div id="table"></div></div>
+            <style scoped>
+                div {
+                    /*display: inline-block;*/
+                    border: 1px solid #ccc;
+                }
+                form {
+                    width: 100%;
+                    margin: 0 0 1em 0;
+                }
+                button, input[type="text"] {
+                    padding: 6px;
+                }
+                input[type="text"] {
+                    width: 75%;
+                }
+                button {
+                    width: 20%;
+                }
+
+                table {
+                    width: 100%;
+                }
+
+                caption, tfoot td {
+                    text-align: left;
+                    color: #fff;
+                    background-color: #666;
+                    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+                }
+
+                legend{
+                    color: #fff;
+                }
+
+                caption .label {
+                    display: block;
+                    /* font-weight: bold; */
+                    padding: 3px 3px 8px 3px;
+                    font-size: 14px;
+                }
+                caption form {
+                    white-space: nowrap;
+                }
+
+                caption strong {
+                    font-weight: normal;
+                    padding: 2px;
+                    border: 1px solid #ddd;
+                    color: #ddd;
+                }
+
+                select {
+                    padding: 2px;
+                }
+
+                caption a {
+                    cursor: pointer;
+                    text-decoration: none;
+                    color: #fff;
+                    font-size: 26px;
+                    font-weight: bold;
+                    line-height: 0;
+                    vertical-align: sub;
+                }
+                caption, th, td {
+                    padding: 6px;
+                }
+                th {
+                    text-align: left;
+                    background-color: #ccc;
+                }
+                thead th {
+                    text-align: center;
+                }
+                td {
+                    text-align: right;
+                    background-color: #eee;
+                }
+                fieldset {
+                    padding: 10px;
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    margin: 0 0 5px 4px;
+                }
+                p:last-of-type {
+                    margin-bottom: 0;
+                }
+                .label p {
+                    margin-left: 0;
+                }
+
+                tbody tr:hover th, tbody tr:hover td {
+                    background-color: #c0c0c0;
+                    color: #fff;
+                }
+
+                #dataset {
+                    margin: 1em;
+                    font-weight: bold;
+                }
+            </style>
         </section>
 
 <script>
+    'use strict';
 
-    $(document).ready((r) => {
-        const jsonStat = JSONstat("/_/api/user/datasource/query");
-        console.log(jsonStat);
+    $(function() {
+        const url = 'http://json-stat.org/samples/us-labor-ds.json';
+        const dynamic = '/_/api/user/datasource/query';
+        const j = JSONstat(url);
+        console.log(j);
+
+        let uri = encodeURIComponent(url),
+                dsid = null,
+                table = document.getElementById("table"),
+                len = j.length;
+
+        if (len === 0) {
+            table.innerHTML = "Wrong JSON-stat response. Please, verify the address you have specified.";
+        } else {
+            if (dsid === null) {
+                if (len === 1 || j.class === "dataset") {
+                    JSONstatUtils.tbrowser({
+                        selector: table,
+                        jsonstat: j
+                    });
+                } else {
+                    if (j.class === "bundle") {
+                        for (var i = 0, html = ""; i < len; i++) {
+                            html += '<li><a href="?uri=' + uri + '&amp;ds=' + i + '">' + j.Dataset(i).label + '</a></li>';
+                        }
+                        table.innerHTML = '<p id="dataset">The JSON-stat bundle contains more than one data set. Select one:</p><ul>' + html + "</ul>";
+                    } else {
+                        if (j.class === "collection") {
+                            var items = j.Item({class: "dataset"});
+                            len = items.length;
+
+                            for (var i = 0, html = ""; i < len; i++) {
+                                html += '<li><a href="?uri=' + encodeURIComponent(items[i].href) + '">' + items[i].label + '</a></li>';
+                            }
+                            table.innerHTML = '<p id="dataset">The JSON-stat collection contains the following data sets. Select one:</p><ul>' + html + "</ul>";
+                        }
+                    }
+                }
+            } else {
+                JSONstatUtils.tbrowser({
+                    selector: table,
+                    jsonstat: j,
+                    dsid: dsid
+                });
+            }
+        }
     });
 
 </script>
