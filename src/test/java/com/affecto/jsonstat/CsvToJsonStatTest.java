@@ -1,8 +1,7 @@
 package com.affecto.jsonstat;
 
-import com.affecto.jsonstat.blocks.DimensionGroupBlock;
-import com.affecto.jsonstat.blocks.IndividualDimensionBlock;
-import com.affecto.jsonstat.blocks.SingleDatasetBlock;
+import com.affecto.jsonstat.blocks.*;
+import com.affecto.jsonstat.elements.IndexElement;
 import com.affecto.jsonstat.elements.UpdatedElement;
 import com.affecto.jsonstat.elements.ValueElement;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class CsvToJsonStatTest {
 
@@ -76,11 +74,74 @@ public class CsvToJsonStatTest {
         dimensionBuilder.id(ImmutableList.of("year", "county", "labor"));
         dimensionBuilder.size(ImmutableList.of(byYear.size(), byZip.size(), 1));
 
+        dimensionBuilder.role(ImmutableMap.of(
+                "time", ImmutableList.of("year"),
+                "geo", ImmutableList.of("county"),
+                "metric", ImmutableList.of("labor")
+        ));
 
-        dimensionBuilder.role(ImmutableMap.of("foo", ImmutableList.of("asd", "zxc")));
-        dimensionBuilder.dimensions(ImmutableMap.of("asd",
-                IndividualDimensionBlock.builder()
-                        .build()));
+        dimensionBuilder.dimensions(ImmutableMap.of(
+                "labor", IndividualDimensionBlock.builder()
+                            .label("Labor force status")
+                            .category(DimensionCategoryBlock.builder()
+                                    .index(IndexElement.builder().map(ImmutableMap.of(
+                                            "labforce", 0,
+                                            "empl", 1,
+                                            "unempl", 2,
+                                            "unr", 3
+                                    )).build())
+                                    .label(ImmutableMap.of(
+                                            "labforce", "Labor Force",
+                                            "empl", "Employed",
+                                            "unempl", "Unemployed",
+                                            "unr", "Unemployment rate"
+                                    ))
+                                    .unit(ImmutableMap.of(
+                                            "labforce", IndividualDimensionUnitBlock.builder()
+                                                    .type("count")
+                                                    .base("person")
+                                                    .symbol("")
+                                                    .multiplier(0)
+                                                    .build(),
+                                            "empl", IndividualDimensionUnitBlock.builder()
+                                                    .type("count")
+                                                    .base("person")
+                                                    .symbol("")
+                                                    .multiplier(0)
+                                                    .build(),
+                                            "unempl", IndividualDimensionUnitBlock.builder()
+                                                    .type("count")
+                                                    .base("person")
+                                                    .symbol("")
+                                                    .multiplier(0)
+                                                    .build(),
+                                            "unr", IndividualDimensionUnitBlock.builder()
+                                                    .type("ratio")
+                                                    .base("Per cent")
+                                                    .symbol("%")
+                                                    .multiplier(0)
+                                                    .build()
+                                    ))
+                                    .build())
+                        .build(),
+                "year", IndividualDimensionBlock.builder()
+                        .label("Year")
+                        .category(DimensionCategoryBlock.builder()
+                                .label(ImmutableMap.of(
+                                        "2012", "2012"
+                                ))
+                                .build())
+                        .build(),
+                "county", IndividualDimensionBlock.builder()
+                        .label("County")
+                        .category(DimensionCategoryBlock.builder()
+                                .index(counties.stream()
+                                        .sorted((a, b) -> a.zip.compareTo(b.zip))
+                                        // XXX HERE
+                                .collect())
+                                .build())
+                        .build()
+        ));
 
         datasetBuilder.dimension(dimensionBuilder.build());
 
