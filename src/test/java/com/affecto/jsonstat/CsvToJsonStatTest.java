@@ -81,9 +81,6 @@ public class CsvToJsonStatTest {
     public void csvToJsonStat() throws Exception {
         final Pattern pattern = Pattern.compile("(.{8}),([0-9]{2}),([0-9]{3}),\"(.*)\",([0-9]*),,([0-9]*),([0-9]*),([0-9]*),([0-9\\.]*)");
 
-        // The original us-labor-ds.json has various problems, one of which is that the state-zip key is truncated,
-        // and lines with duplicate 5-digit zips are quietly disposed of. We'll do the same here.
-
         // Collect data
 
         final List<County> counties =
