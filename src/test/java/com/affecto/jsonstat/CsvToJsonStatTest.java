@@ -4,23 +4,35 @@ import com.affecto.jsonstat.blocks.*;
 import com.affecto.jsonstat.elements.IndexElement;
 import com.affecto.jsonstat.elements.UpdatedElement;
 import com.affecto.jsonstat.elements.ValueElement;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.diff.JsonDiff;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toMap;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class CsvToJsonStatTest {
 
@@ -31,18 +43,46 @@ public class CsvToJsonStatTest {
         return ret;
     }
 
+    private static JsonNode readFromClassPath(final String path) {
+        final ObjectMapper om = objectMapper();
+        try (final InputStream is = fromTestClassPath(path)) {
+            return om.readValue(is, JsonNode.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static JsonNode backAndForth(final SingleDatasetBlock singleDatasetBlock) {
+        final ObjectMapper om = objectMapper();
+        try {
+            return om.readValue(om.writeValueAsString(singleDatasetBlock), JsonNode.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static InputStream fromTestClassPath(final String path) {
+        return CsvToJsonStatTest.class.getClassLoader().getResourceAsStream(path);
+    }
+
     @Data @AllArgsConstructor
     private static class County {
-        public String state, zip;
-        public String a, b;
+        public String laus, state, county;
         public String name;
         public String year;
         public String total, employed, unemployed, rate;
+
+        public String getZip() {
+            return state + county;
+        }
     }
 
     @Test
     public void csvToJsonStat() throws Exception {
-        final Pattern pattern = Pattern.compile("(..)(.*),([0-9]*),([0-9]*),\"(.*)\",([0-9]*),,([0-9]*),([0-9]*),([0-9]*),([0-9\\.]*)");
+        final Pattern pattern = Pattern.compile("(.{8}),([0-9]{2}),([0-9]{3}),\"(.*)\",([0-9]*),,([0-9]*),([0-9]*),([0-9]*),([0-9\\.]*)");
+
+        // The original us-labor-ds.json has various problems, one of which is that the state-zip key is truncated,
+        // and lines with duplicate 5-digit zips are quietly disposed of. We'll do the same here.
 
         // Collect data
 
@@ -50,7 +90,8 @@ public class CsvToJsonStatTest {
                 Files.readAllLines(Paths.get("src/test/resources/laucnty12.csv")).stream()
                 .map(pattern::matcher)
                 .filter(Matcher::matches)
-                .map(m -> new County(m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6), m.group(7), m.group(8), m.group(9), m.group(10)))
+                .map(m -> new County(m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6), m.group(7), m.group(8), m.group(9)))
+                .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
                 .collect(Collectors.toList());
 
         // Build dimension histograms
@@ -59,10 +100,7 @@ public class CsvToJsonStatTest {
                 Collectors.groupingBy(c -> Integer.parseInt(c.year)));
 
         final Map<String, List<County>> byZip = counties.stream().collect(
-                Collectors.groupingBy(County::getZip));
-
-        final Map<String, List<County>> byYearAndZip = counties.stream().collect(
-                Collectors.groupingBy(c -> c.year + c.zip));
+                Collectors.groupingBy(c -> c.state + c.county));
 
         // Write the dimensions
 
@@ -72,7 +110,7 @@ public class CsvToJsonStatTest {
         final ValueElement.Builder valueBuilder = ValueElement.builder();
 
         dimensionBuilder.id(ImmutableList.of("year", "county", "labor"));
-        dimensionBuilder.size(ImmutableList.of(byYear.size(), byZip.size(), 1));
+        dimensionBuilder.size(ImmutableList.of(byYear.size(), byZip.size(), 4));
 
         dimensionBuilder.role(ImmutableMap.of(
                 "time", ImmutableList.of("year"),
@@ -135,10 +173,17 @@ public class CsvToJsonStatTest {
                 "county", IndividualDimensionBlock.builder()
                         .label("County")
                         .category(DimensionCategoryBlock.builder()
-                                .index(counties.stream()
-                                        .sorted((a, b) -> a.zip.compareTo(b.zip))
-                                        // XXX HERE
-                                .collect())
+                                .index(IndexElement.builder()
+                                        .map(IntStream.range(0, counties.size())
+                                                .boxed()
+                                                .collect(toMap(
+                                                        i -> counties.get(i).getZip(), i -> i,
+                                                        (a, b) -> a, TreeMap::new))
+                                        ).build()
+                                )
+                                .label(counties.stream().collect(toMap(
+                                        County::getZip, c -> c.name,
+                                        (a, b) -> a, TreeMap::new)))
                                 .build())
                         .build()
         ));
@@ -148,7 +193,7 @@ public class CsvToJsonStatTest {
         // Write the values
 
         final List<Number> values = counties.stream()
-                .sorted((a, b) -> (a.year + a.zip).compareTo(b.year + b.zip))
+                .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
                 .flatMap(c -> ImmutableList.of(
                         Integer.parseInt(c.total),
                         Integer.parseInt(c.employed),
@@ -168,9 +213,23 @@ public class CsvToJsonStatTest {
         datasetBuilder.href("http://json-stat.org/samples/us-labor-ds.json");
         datasetBuilder.label("Labor Force Data by County, 2012 Annual Averages");
 
-        final SingleDatasetBlock ds = datasetBuilder.build();
+        // Test equivalence
 
-        System.err.println(ds);
+        final SingleDatasetBlock stat = datasetBuilder.build();
+
+        final JsonNode generated = backAndForth(stat);
+        final JsonNode original = readFromClassPath("us-labor-ds.json");
+
+        final JsonPatch patch = JsonDiff.asJsonPatch(original, generated);
+        if (!"[]".equals(patch.toString())) {
+            System.err.println("patch: " + patch.toString());
+        }
+
+        Assert.assertEquals(original, generated);
+
+        final JsonNode mockNode = mock(JsonNode.class);
+        patch.apply(mockNode);
+        verifyZeroInteractions(mockNode);
     }
 
 }
