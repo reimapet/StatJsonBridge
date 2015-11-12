@@ -19,6 +19,15 @@
             <div class="row"></div>
         </section>
 
+<script>
+
+    $(document).ready((r) => {
+        const jsonStat = JSONstat("/_/api/user/datasource/query");
+        console.log(jsonStat);
+    });
+
+</script>
+
     </div>
 
     {{> partials/wrapper_footer }}

@@ -84,7 +84,7 @@ public class RenderService {
 
         datasetBuilder.source("source");
         datasetBuilder.href("href");
-        datasetBuilder.jsonStatClass("class");
+        datasetBuilder.jsonStatClass("dataset");
         datasetBuilder.label("label");
 
         try {
