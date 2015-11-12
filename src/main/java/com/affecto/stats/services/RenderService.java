@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.*;
 import org.mariadb.jdbc.MySQLDataSource;
+import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -95,17 +96,55 @@ public class RenderService {
     }
 
     private DataSource connectToImportDataSource(final String dataSourceName) {
-        return dataSourceRepository.findByName(dataSourceName).map(ids -> {
-            try {
-                final MySQLDataSource ret = new MySQLDataSource();
-                ret.setUrl(ids.getJdbcUrl());
-                ret.setUserName(ids.getJdbcUsername());
-                ret.setPassword(ids.getJdbcPassword());
-                return ret;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+        return dataSourceRepository.findByName(dataSourceName)
+                .map(ids -> createDataSource(ids.getJdbcUrl(), ids.getJdbcUsername(), ids.getJdbcPassword()))
+                .orElse(null);
+    }
+
+    private static DataSource createDataSource(final String url, final String username, final String password) {
+        try {
+            if (url.startsWith("jdbc:mysql")) {
+                return createMySQLDataSource(url, username, password);
+            } else if (url.startsWith("jdbc:h2")) {
+                return createH2DataSource(url, username, password);
+            } else if (url.startsWith("jdbc:postgres")) {
+                return createPostgreSQLDataSource(url, username, password);
+            } else {
+                return null;
             }
-        }).orElse(null);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static DataSource createMySQLDataSource(final String url, final String username, final String password)
+            throws SQLException
+    {
+        final MySQLDataSource ret = new MySQLDataSource();
+        ret.setUrl(url);
+        ret.setUserName(username);
+        ret.setPassword(password);
+        return ret;
+    }
+
+    private static DataSource createH2DataSource(final String url, final String username, final String password)
+            throws SQLException
+    {
+        final org.h2.jdbcx.JdbcDataSource ret = new org.h2.jdbcx.JdbcDataSource();
+        ret.setUrl(url);
+        ret.setUser(username);
+        ret.setPassword(password);
+        return ret;
+    }
+
+    private static DataSource createPostgreSQLDataSource(final String url, final String username, final String password)
+            throws SQLException
+    {
+        final PGSimpleDataSource ret = new PGSimpleDataSource();
+        ret.setUrl(url);
+        ret.setUser(username);
+        ret.setPassword(password);
+        return ret;
     }
 
 }
