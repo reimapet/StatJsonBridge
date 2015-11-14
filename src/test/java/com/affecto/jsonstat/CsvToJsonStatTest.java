@@ -12,6 +12,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.diff.JsonDiff;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.CharStreams;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.Assert;
@@ -19,6 +20,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -83,13 +87,17 @@ public class CsvToJsonStatTest {
 
         // Collect data
 
-        final List<County> counties =
-                Files.readAllLines(Paths.get("src/test/resources/laucnty12.csv")).stream()
-                .map(pattern::matcher)
-                .filter(Matcher::matches)
-                .map(m -> new County(m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6), m.group(7), m.group(8), m.group(9)))
-                .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
-                .collect(Collectors.toList());
+        final List<County> counties;
+        try (final InputStream is = fromTestClassPath("laucnty12.csv");
+             final Reader br = new InputStreamReader(is, StandardCharsets.UTF_8))
+        {
+            counties = CharStreams.readLines(br).stream()
+                    .map(pattern::matcher)
+                    .filter(Matcher::matches)
+                    .map(m -> new County(m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6), m.group(7), m.group(8), m.group(9)))
+                    .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
+                    .collect(Collectors.toList());
+        }
 
         // Build dimension histograms
 

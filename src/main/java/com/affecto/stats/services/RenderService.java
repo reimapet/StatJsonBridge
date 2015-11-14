@@ -11,17 +11,21 @@ import com.affecto.stats.repositories.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.*;
+import com.google.common.io.CharStreams;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mariadb.jdbc.MySQLDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
@@ -51,6 +55,9 @@ public class RenderService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Value("classpath:laucnty12.csv")
+    private Resource csv;
 
     public String renderQuery(final String username, final String dataSourceName, final String queryName) {
         final InputQuery query = queryRepository.findByName(queryName).get();
@@ -83,13 +90,17 @@ public class RenderService {
 
         // Collect data
 
-        final List<County> counties =
-                Files.readAllLines(Paths.get("src/test/resources/laucnty12.csv")).stream()
-                        .map(pattern::matcher)
-                        .filter(Matcher::matches)
-                        .map(m -> new County(m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6), m.group(7), m.group(8), m.group(9)))
-                        .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
-                        .collect(Collectors.toList());
+        final List<County> counties;
+        try (final InputStream is = csv.getInputStream();
+                final Reader br = new InputStreamReader(is, StandardCharsets.UTF_8))
+        {
+            counties = CharStreams.readLines(br).stream()
+                            .map(pattern::matcher)
+                            .filter(Matcher::matches)
+                            .map(m -> new County(m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6), m.group(7), m.group(8), m.group(9)))
+                            .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
+                            .collect(Collectors.toList());
+        }
 
         // Build dimension histograms
 
