@@ -1,0 +1,29 @@
+spring.jackson.serialization.INDENT_OUTPUT: true
+
+logging.level:
+  "org.springframework": WARN
+  "org.elasticsearch": WARN
+  "org.hibernate": WARN
+  "io.undertow": ERROR
+  "org.xnio": WARN
+  "org.apache": WARN
+
+server:
+  port: 8080
+  sessionTimeout: 0
+
+management.port: -1
+
+spring:
+  main:
+    show-banner: false
+  datasource:
+    platform: h2
+    url: "jdbc:h2:mem:dev;DB_CLOSE_ON_EXIT=FALSE"
+  mustache:
+    cache: false
+    suffix: .mustache
+
+spring.jpa.hibernate.ddl-auto: create-drop
+
+spring.data.rest.base-path: /_/rest/
