@@ -198,7 +198,6 @@ public class CsvToJsonStatTest {
         // Write the values
 
         final List<Number> values = counties.stream()
-                .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
                 .flatMap(c -> ImmutableList.of(
                         Integer.parseInt(c.total),
                         Integer.parseInt(c.employed),
