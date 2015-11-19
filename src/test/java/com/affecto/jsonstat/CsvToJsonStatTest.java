@@ -15,6 +15,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.CharStreams;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toMap;
 import static org.mockito.Mockito.mock;
@@ -83,18 +86,13 @@ public class CsvToJsonStatTest {
 
     @Test
     public void csvToJsonStat() throws Exception {
-        final Pattern pattern = Pattern.compile("(.{8}),([0-9]{2}),([0-9]{3}),\"(.*)\",([0-9]*),,([0-9]*),([0-9]*),([0-9]*),([0-9\\.]*)");
-
-        // Collect data
-
         final List<County> counties;
-        try (final InputStream is = fromTestClassPath("laucnty12.csv");
-             final Reader br = new InputStreamReader(is, StandardCharsets.UTF_8))
+        try (final InputStream inputStream = fromTestClassPath("laucnty12.csv");
+             final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             final CSVParser parser = CSVFormat.DEFAULT.parse(reader))
         {
-            counties = CharStreams.readLines(br).stream()
-                    .map(pattern::matcher)
-                    .filter(Matcher::matches)
-                    .map(m -> new County(m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6), m.group(7), m.group(8), m.group(9)))
+            counties = StreamSupport.stream(parser.spliterator(), false)
+                    .map(r -> new County(r.get(0), r.get(1), r.get(2), r.get(3), r.get(4), r.get(6), r.get(7), r.get(8), r.get(9)))
                     .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
                     .collect(Collectors.toList());
         }
@@ -198,7 +196,6 @@ public class CsvToJsonStatTest {
         // Write the values
 
         final List<Number> values = counties.stream()
-                .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
                 .flatMap(c -> ImmutableList.of(
                         Integer.parseInt(c.total),
                         Integer.parseInt(c.employed),
