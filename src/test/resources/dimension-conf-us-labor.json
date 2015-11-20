@@ -1,25 +1,11 @@
 {
   "dimension": {
-    "id": [
-      "year",
-      "county",
-      "labor"
-    ],
-    "size": [
-      1,
-      3220,
-      4
-    ],
+    "id": [ "year", "county", "labor" ],
+    "size": [ 1, 3220, 4 ],
     "role": {
-      "time": [
-        "year"
-      ],
-      "geo": [
-        "county"
-      ],
-      "metric": [
-        "labor"
-      ]
+      "time": ["year"],
+      "geo": ["county"],
+      "metric": ["labor"]
     },
     "labor": {
       "label": "Labor force status",

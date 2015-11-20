@@ -25,6 +25,7 @@ public abstract class StreamingJsonDeserializer<T> extends JsonDeserializer<T> {
         }
     }
 
+
     protected static <T> Stream<T> iteratorAsStream(final Iterator<T> iterator) {
         return stream(spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
     }

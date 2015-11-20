@@ -1,0 +1,50 @@
+  {
+    "basicInfo": {
+      "label" : "Info for dataset",
+      "id": [ "year", "county", "labor" ],
+      "size": [ 1, 3220, 4 ],
+      "role": {
+        "time": [
+          "year"
+        ],
+        "geo": [
+          "county"
+        ],
+        "metric": [
+          "labor"
+        ]
+      }
+    },
+    "dimensions" : [
+      {
+        "id" : "year",
+        "label" : "year",
+        "category": {
+          "index" : {
+            "2012" : 1
+          },
+          "label": {
+            "2012": "12"
+          }
+        }
+      },
+      {
+        "id": "county",
+        "label": "county",
+        "category": {
+          "dynamicIndex": {
+            "className": "com.affecto.jsonstat.util.UniqueIndexGenerator",
+            "parameters": {
+              "column": "2"
+            }
+          }
+        }
+      },
+      {
+        "id" : "labor",
+        "label" : "labor"
+
+      }
+    ]
+  }
+

@@ -50,6 +50,15 @@ public class CsvToJsonStatTest {
         return ret;
     }
 
+    private static SingleDatasetBlock readBlockFromClassPath(final String path) {
+        final ObjectMapper om = objectMapper();
+        try (final InputStream is = fromTestClassPath(path)) {
+            return om.readValue(is, SingleDatasetBlock.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static JsonNode readFromClassPath(final String path) {
         final ObjectMapper om = objectMapper();
         try (final InputStream is = fromTestClassPath(path)) {

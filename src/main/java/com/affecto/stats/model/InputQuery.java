@@ -29,8 +29,7 @@ public class InputQuery {
 
     private String sqlQuery;
 
-    // selected dimensions
-
-    // manual dimension titles?
+    /** The jsonstat dimension configuration for the data **/
+    private String dimensionConfiguration;
 
 }
