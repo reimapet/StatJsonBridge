@@ -23,17 +23,14 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.junit.Assert;
 import org.junit.Test;
-import java.util.Iterator;
+
+import java.util.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -101,22 +98,16 @@ public class DimConfigToJsonTest {
 
     @Test
     public void csvToJsonStat() throws Exception {
-        final List<County> counties;
-        try (final InputStream inputStream = fromTestClassPath("laucnty12.csv");
-             final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             final CSVParser parser = CSVFormat.DEFAULT.parse(reader)) {
-            counties = StreamSupport.stream(parser.spliterator(), false)
-                    .map(r -> new County(r.get(0), r.get(1), r.get(2), r.get(3), r.get(4), r.get(6), r.get(7), r.get(8), r.get(9)))
-                    .sorted((a, b) -> (a.year + a.getZip()).compareTo(b.year + b.getZip()))
-                    .collect(Collectors.toList());
-        }
         final JsonNode original = readFromClassPath("dimension-conf.json");
 
         DimensionConfigBlock block = readBlockFromClassPath(("dimension-conf.json"));
-        printConfig( block );
 
         System.err.println("patch: " + original.toString());
 
+        final InputStream inputStream = fromTestClassPath("laucnty12.csv");
+        final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        final CSVParser parser = CSVFormat.DEFAULT.parse(reader);
+        generate( block, parser );
 
     }
 
@@ -124,40 +115,67 @@ public class DimConfigToJsonTest {
     {
         System.out.println( block.basicInfo.toString() );
         System.out.println(block.dimensions.toString());
-
         System.out.println(block.dimensions.get(0).category.toString());
 
     }
 
-    public void generate( DimensionConfigBlock block, CSVParser data )
-            throws Exception
-    {
+    public void generate( DimensionConfigBlock config, CSVParser data )
+            throws Exception {
 
         final SingleDatasetBlock.Builder datasetBuilder = SingleDatasetBlock.builder();
         final DimensionGroupBlock.Builder dimensionBuilder = DimensionGroupBlock.builder();
 
-        Iterator<IndividualDimension> it = block.dimensions.iterator();
-        List<String> dimensionIds = new ArrayList<String>();
-        List<String> dimensionLabels = new ArrayList<String>();
+        Iterator<IndividualDimension> it = config.dimensions.iterator();
+        List<String> dimensionIds = new ArrayList<>();
+        List<String> dimensionLabels = new ArrayList<>();
 
-        while( it.hasNext())
-        {
+        while (it.hasNext()) {
             IndividualDimension dim = it.next();
             dimensionIds.add(dim.getId());
-            dimensionLabels.add( dim.getLabel() );
+            dimensionLabels.add(dim.getLabel());
         }
 
-        datasetBuilder.label(block.getLabel());
-        dimensionBuilder.id( dimensionIds );
+        datasetBuilder.label(config.getBasicInfo().getLabel());
+        datasetBuilder.href(config.getBasicInfo().getHref());
+        datasetBuilder.source(config.getBasicInfo().getSource());
 
-        dimensionBuilder.size(generateSize( data ));
+        dimensionBuilder.id(dimensionIds);
+        dimensionBuilder.size(config.basicInfo.getSize());
+        // Handle dynamic portion of size
+        for (int i = 0; i < config.getBasicInfo().getSize().size(); i++) {
+            // configured size of 0 means it should be replaced with number of data rows
+            if (config.getBasicInfo().getSize().get(i).intValue() == 0) {
+                config.getBasicInfo().getSize().set(i, data.getRecords().size());
+            }
+        }
+
+
+        // Dimensions
+        Map<String, IndividualDimensionBlock> dimensionMap = new HashMap<>();
+
+        IndividualDimensionBlock.Builder individualDimensionBuilder = IndividualDimensionBlock.builder();
+        for (int i = 0; i < config.getDimensions().size(); i++)
+        {
+            individualDimensionBuilder.label(config.getDimensions().get(i).getLabel());
+            if (config.getDimensions().get(i).getCategory().getIndex() != null) {
+                IndividualDimensionBlock d = individualDimensionBuilder.category(DimensionCategoryBlock.builder().label(config.getDimensions().get(i).getCategory().getLabel())
+                        .index(new IndexElement(config.getDimensions().get(i).getCategory().getIndex()))
+                        .child(config.getDimensions().get(i).getCategory().getChild()).build()).build();
+
+                dimensionMap.put(d.getLabel(), d);
+
+            } else {
+                // TODO: handle dynamic index
+            }
+        }
+        dimensionBuilder.dimensions(dimensionMap);
+        datasetBuilder.dimension(dimensionBuilder.build());
+        System.out.println(datasetBuilder.toString());
     }
 
     /**
-     * Generate size array dynamically from data
-     * TODO
-     ***/
-
+     * Calculate number of unique values in each column
+     **/
     public List<Integer> generateSize( CSVParser data )
             throws Exception
     {
@@ -167,8 +185,16 @@ public class DimConfigToJsonTest {
         CSVRecord record = list.get(0);
         int colSize = record.size();
 
-        List<Integer> sizeList = new ArrayList<Integer>(colSize);
-
-        return null;
+        List<Integer> sizeList = new ArrayList<>(colSize);
+        for( int i = 0 ; i < colSize ; i++ )
+        {
+            Map<String, String> uniqueVals = new HashMap<>();
+            for( int j = 0 ; j < list.size() ; j++ )
+            {
+                uniqueVals.put(list.get(j).get(i), "");
+            }
+            sizeList.add(i, uniqueVals.size());
+        }
+        return sizeList;
     }
 }

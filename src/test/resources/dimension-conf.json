@@ -2,7 +2,7 @@
     "basicInfo": {
       "label" : "Info for dataset",
       "id": [ "year", "county", "labor" ],
-      "size": [ 1, 3220, 4 ],
+      "size": [ 1, 0, 4 ],
       "role": {
         "time": [
           "year"
@@ -27,6 +27,51 @@
             "2012": "12"
           }
         }
+      },
+      {
+        "id" : "labor",
+        "label" : "labor",
+        "category" : {
+          "index" : {
+            "labforce" : 0,
+            "empl" : 1,
+            "unempl" : 2,
+            "unr" : 3
+          },
+          "label" : {
+            "labforce" : "Labor Force",
+            "empl" : "Employed",
+            "unempl" : "Unemployed",
+            "unr" : "Unemployment rate"
+          },
+          "unit" : {
+            "labforce" : {
+              "type" : "count",
+              "base" : "person",
+              "symbol" : "",
+              "multiplier" : 0
+            },
+            "empl" : {
+              "type" : "count",
+              "base" : "person",
+              "symbol" : "",
+              "multiplier" : 0
+            },
+            "unempl" : {
+              "type" : "count",
+              "base" : "person",
+              "symbol" : "",
+              "multiplier" : 0
+            },
+            "unr" : {
+              "type" : "ratio",
+              "base" : "Per cent",
+              "symbol" : "%",
+              "multiplier" : 0
+            }
+          }
+        }
+
       },
       {
         "id": "county",
