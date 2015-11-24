@@ -18,6 +18,7 @@ public class IndividualDimension {
     @JsonInclude(NON_NULL)
     public String label;
 
+
     public DimensionCategory category;
 
 }

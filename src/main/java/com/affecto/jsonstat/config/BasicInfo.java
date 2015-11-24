@@ -29,6 +29,18 @@ public class BasicInfo {
 
     @JsonProperty(required = false)
     @JsonInclude(NON_NULL)
+    public String label;
+
+    @JsonProperty(required = false)
+    @JsonInclude(NON_NULL)
+    public String href;
+
+    @JsonProperty(required = false)
+    @JsonInclude(NON_NULL)
+    public String source;
+
+    @JsonProperty(required = false)
+    @JsonInclude(NON_NULL)
     public BasicInfoRoles role;
 
 }

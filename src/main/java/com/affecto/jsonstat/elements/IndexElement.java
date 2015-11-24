@@ -30,6 +30,11 @@ public class IndexElement {
         return list != null;
     }
 
+    public IndexElement( final Map<String, Integer> map )
+    {
+        setMap( map );
+    }
+
     public IndexElement setMap(final Map<String, Integer> map) {
         this.map = map;
         this.list = null;

@@ -10,6 +10,7 @@ import java.util.Map;
 
 /**
  * Created by reimapet on 20.11.2015.
+ * The highest level class in configuration class hierarchy
  */
 @Data
 @NoArgsConstructor

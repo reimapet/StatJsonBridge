@@ -1,9 +1,11 @@
 package com.affecto.jsonstat.config;
 
+import com.affecto.jsonstat.blocks.IndividualDimensionUnitBlock;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.util.Map;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -31,6 +33,15 @@ public class DimensionCategory {
 
     @JsonProperty(required = false)
     @JsonInclude(NON_NULL)
+    public Map<String, List<String>> child;
+
+    @JsonInclude(NON_NULL)
+    public Map<String, IndividualDimensionUnitBlock> unit;
+
+
+    @JsonProperty(required = false)
+    @JsonInclude(NON_NULL)
+    // This property may be set to override the regular preset index to generate the index from data
     public DynamicIndex dynamicIndex;
 
 }
