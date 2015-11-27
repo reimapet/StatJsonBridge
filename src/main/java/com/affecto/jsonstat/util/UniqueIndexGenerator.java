@@ -16,7 +16,6 @@ public class UniqueIndexGenerator implements IndexGenerator {
         ArrayList<Integer> colIndexes = extractParameters(parms);
 
         Map<String, Integer> indexMap = new LinkedHashMap<>();
-        int indexCounter = 0;
         parser.forEach( (row) -> {
           StringBuffer key = new StringBuffer();
           colIndexes.forEach((index) -> key.append(row.get(index) ) );

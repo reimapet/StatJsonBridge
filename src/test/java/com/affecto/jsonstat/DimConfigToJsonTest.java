@@ -151,7 +151,6 @@ public class DimConfigToJsonTest {
             }
         }
 
-
         // Dimensions
         Map<String, IndividualDimensionBlock> dimensionMap = new HashMap<>();
 
@@ -172,6 +171,7 @@ public class DimConfigToJsonTest {
                 DimensionCategory.DynamicIndex di = config.getDimensions().get(i).getCategory().getDynamicIndex();
                 IndexGenerator generator = (IndexGenerator)Class.forName(di.getClassName()).newInstance();
                 Map<String, Integer> generatedIndex = generator.generateIndex(data, di.getParameters());
+                System.out.println( di.getParameters() ) ;
 
                 IndividualDimensionBlock d = individualDimensionBuilder.category(DimensionCategoryBlock.builder().label(config.getDimensions().get(i).getCategory().getLabel())
                         .index(new IndexElement(generatedIndex))
