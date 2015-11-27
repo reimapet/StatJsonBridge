@@ -1,5 +1,7 @@
 package com.affecto.jsonstat;
 
+import com.affecto.jsonstat.config.DimensionCategory;
+import com.affecto.jsonstat.util.IndexGenerator;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
@@ -166,6 +168,15 @@ public class DimConfigToJsonTest {
 
             } else {
                 // TODO: handle dynamic index
+                System.err.println("Dynamic index");
+                DimensionCategory.DynamicIndex di = config.getDimensions().get(i).getCategory().getDynamicIndex();
+                IndexGenerator generator = (IndexGenerator)Class.forName(di.getClassName()).newInstance();
+                Map<String, Integer> generatedIndex = generator.generateIndex(data, di.getParameters());
+
+                IndividualDimensionBlock d = individualDimensionBuilder.category(DimensionCategoryBlock.builder().label(config.getDimensions().get(i).getCategory().getLabel())
+                        .index(new IndexElement(generatedIndex))
+                        .child(config.getDimensions().get(i).getCategory().getChild()).build()).build();
+                dimensionMap.put(d.getLabel(), d);
             }
         }
         dimensionBuilder.dimensions(dimensionMap);

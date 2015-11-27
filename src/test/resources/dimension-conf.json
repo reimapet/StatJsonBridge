@@ -80,15 +80,10 @@
           "dynamicIndex": {
             "className": "com.affecto.jsonstat.util.UniqueIndexGenerator",
             "parameters": {
-              "column": "2"
+              "indexColumns": "1,2"
             }
           }
         }
-      },
-      {
-        "id" : "labor",
-        "label" : "labor"
-
       }
     ]
   }
